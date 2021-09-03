@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 // Icons
 import {
+  CalendarToday,
   AddBox,
   Delete,
   Edit,
@@ -28,6 +29,33 @@ import {
 
 // Color Schema
 import colors from '~/styles/colors';
+
+export const IconCalendar = styled(CalendarToday)`
+  color: ${colors.warning};
+  height: ${props => (props.size ? `${props.size}px` : '18px')};
+
+  @media (max-height: 990px) {
+    height: ${props => (props.size ? `${props.size - 2}px` : '18px')};
+  }
+`;
+
+export const IconUser = styled(Person)`
+  color: ${colors.secondary};
+  height: ${props => (props.size ? `${props.size}px` : '18px')};
+
+  @media (max-height: 990px) {
+    height: ${props => (props.size ? `${props.size - 2}px` : '18px')};
+  }
+`;
+
+export const IconLogout = styled(Logout)`
+  color: ${colors.warning};
+  height: ${props => (props.size ? `${props.size}px` : '18px')};
+
+  @media (max-height: 990px) {
+    height: ${props => (props.size ? `${props.size - 2}px` : '18px')};
+  }
+`;
 
 export const IconAdd = styled(AddBox)`
   color: ${colors.secondary};
@@ -211,15 +239,6 @@ export const IconEmail = styled(Email)`
 
 export const IconPassword = styled(Lock)`
   color: ${colors.secondary};
-  height: ${props => (props.size ? `${props.size}px` : '18px')};
-
-  @media (max-height: 990px) {
-    height: ${props => (props.size ? `${props.size - 2}px` : '18px')};
-  }
-`;
-
-export const IconLogout = styled(Logout)`
-  color: ${colors.warning};
   height: ${props => (props.size ? `${props.size}px` : '18px')};
 
   @media (max-height: 990px) {
