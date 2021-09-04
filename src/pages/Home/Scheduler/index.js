@@ -1,10 +1,5 @@
 // Dependencies
 import React, { useState, useEffect } from 'react';
-import Scheduler, {
-  SchedulerData,
-  ViewTypes,
-  DATE_FORMAT,
-} from 'react-big-scheduler';
 import { toast } from 'react-toastify';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -16,43 +11,62 @@ import 'react-big-scheduler/lib/css/style.css';
 
 // Styles
 import * as S from './styles';
+import * as I from '~/styles/icons';
 
 export default function SchedulerComponent({ date, profile }) {
-  const [schedulerData, setSchedulerData] = useState(
-    new SchedulerData(moment().format(DATE_FORMAT), ViewTypes.Week)
-  );
+  const [divisions, setDivisions] = useState([]);
+  const [events, setEvents] = useState([]);
+
+  const getDivisions = () => {
+    const divisionList = [];
+    for (let time = 0; time < 24; time++) {
+      divisionList.push({
+        id: time,
+        time: `${time}:00`,
+      });
+    }
+
+    setDivisions(divisionList);
+  };
 
   const getEvents = async () => {
     try {
-      const { data: events } = await api.get(
+      const { data } = await api.get(
         `/events?userId=${profile.id}&start=${date.start_at}&end=${date.end_at}`
       );
 
-      if (events && events.length) {
-        const eventList = events.map(event => ({
-          id: event.id,
-          start: event.start_at,
-          end: event.end_at,
-          resourceId: `r${event.id}`,
-          title: event.name,
-          bgColor: '#D9D9D9',
-        }));
+      const eventList = [];
+      divisions.forEach(division => {
+        let eventItem = {
+          time: division.time,
+          isEvent: false,
+          id: '',
+          name: '',
+          description: '',
+        };
 
-        const resourceList = events.map(event => ({
-          id: `r${event.id}`,
-          name: event.name,
-        }));
+        data.forEach(event => {
+          const divisionTime = moment(event.start_at).set({
+            hour: division.id,
+            minute: 0,
+            second: 0,
+            millisecond: 0,
+          });
+          if (moment(divisionTime).isBetween(event.start_at, event.end_at)) {
+            eventItem = {
+              time: division.time,
+              isEvent: true,
+              id: event.id,
+              name: event.name,
+              description: event.name,
+            };
+          }
+        });
 
-        console.log(eventList, resourceList);
+        eventList.push(eventItem);
+      });
 
-        const newSchedulerData = new SchedulerData(
-          moment().format(DATE_FORMAT),
-          ViewTypes.Week
-        );
-        newSchedulerData.setEvents(eventList);
-        newSchedulerData.setResources(resourceList);
-        setSchedulerData(newSchedulerData);
-      }
+      setEvents(eventList);
     } catch (err) {
       if (!err.response || err.response.data.error === undefined) {
         toast.error(`Um erro aconteceu, tente novamente mais tarde.`);
@@ -62,23 +76,53 @@ export default function SchedulerComponent({ date, profile }) {
     }
   };
 
+  const handleEvent = event => {
+    console.log(event);
+  };
+
   useEffect(() => {
-    if (date && profile) {
+    if (date && profile && divisions) {
       getEvents();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [date]);
+  }, [date, divisions]);
+
+  useEffect(() => {
+    getDivisions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <S.Container>
-      <Scheduler
-        schedulerData={schedulerData}
-        prevClick={e => console.log(e)}
-        nextClick={e => console.log(e)}
-        onSelectDate={e => console.log(e)}
-        onViewChange={e => console.log(e)}
-        eventItemClick={e => console.log(e)}
-      />
+      <S.Header>
+        <S.Title>
+          <I.IconCalendar size={20} />
+          <h2>{moment(date.start_at).format('MMMM D, YYYY')}</h2>
+        </S.Title>
+      </S.Header>
+      <S.Body>
+        <S.Division>
+          {divisions &&
+            divisions.map(division => (
+              <li key={division.id}>
+                <p>{division.time}</p>
+                <hr />
+              </li>
+            ))}
+        </S.Division>
+        <S.Grid>
+          {events &&
+            events.map(event => (
+              <li key={event.time}>
+                {event.isEvent && (
+                  <S.Item type="button" onclick={() => handleEvent(event)}>
+                    <strong>{event.name}</strong>
+                  </S.Item>
+                )}
+              </li>
+            ))}
+        </S.Grid>
+      </S.Body>
     </S.Container>
   );
 }
@@ -90,6 +134,7 @@ SchedulerComponent.propTypes = {
     end_at: PropTypes.string,
   }),
   profile: PropTypes.shape({
+    name: PropTypes.string,
     id: PropTypes.number,
   }),
 };

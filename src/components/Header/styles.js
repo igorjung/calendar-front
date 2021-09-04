@@ -36,3 +36,17 @@ export const Nav = styled.div`
     margin-left: 8px;
   }
 `;
+
+export const Button = styled.button`
+  padding-left: 32px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+
+  strong {
+    margin-left: 8px;
+    color: ${colors.warning};
+  }
+`;

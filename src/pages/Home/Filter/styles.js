@@ -16,18 +16,3 @@ export const Container = styled.div`
   align-items: flex-start;
   justify-content: space-between;
 `;
-
-export const Button = styled.button`
-  width: 100%;
-  padding-left: 32px;
-
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-
-  strong {
-    margin-left: 8px;
-    color: ${colors.warning};
-  }
-`;
