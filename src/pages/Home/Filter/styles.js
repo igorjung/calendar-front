@@ -13,6 +13,20 @@ export const Container = styled.div`
 
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+export const Button = styled.button`
+  margin-bottom: 16px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+
+  strong {
+    margin-left: 8px;
+    color: ${colors.warning};
+  }
 `;

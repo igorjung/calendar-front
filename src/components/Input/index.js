@@ -44,12 +44,12 @@ Password.defaultProps = {
 export function MoneyInput({ name, value, error, ...rest }) {
   // React Hooks
   const defaultMask = {
-    prefix: 'R$',
+    prefix: '',
     suffix: '',
     allowDecimal: true,
-    decimalSymbol: ',',
+    decimalSymbol: ':',
     decimalLimit: 2,
-    integerLimit: 3,
+    integerLimit: 2,
     allowNegative: false,
     allowLeadingZeroes: false,
     maskOptions: {},

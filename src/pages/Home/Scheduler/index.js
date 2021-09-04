@@ -7,7 +7,8 @@ import PropTypes from 'prop-types';
 // Services
 import api from '~/services/api';
 
-import 'react-big-scheduler/lib/css/style.css';
+// Components
+import EditEvent from '../Edit';
 
 // Styles
 import * as S from './styles';
@@ -16,6 +17,8 @@ import * as I from '~/styles/icons';
 export default function SchedulerComponent({ date, profile }) {
   const [divisions, setDivisions] = useState([]);
   const [events, setEvents] = useState([]);
+  const [eventId, setEventId] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const getDivisions = () => {
     const divisionList = [];
@@ -76,8 +79,19 @@ export default function SchedulerComponent({ date, profile }) {
     }
   };
 
-  const handleEvent = event => {
-    console.log(event);
+  const handleEvent = data => {
+    setEventId(data.id);
+  };
+
+  const handleClose = () => {
+    setEventId(null);
+    setModalOpen(false);
+  };
+
+  const handleRefresh = () => {
+    setEventId(null);
+    setModalOpen(false);
+    getEvents();
   };
 
   useEffect(() => {
@@ -88,12 +102,24 @@ export default function SchedulerComponent({ date, profile }) {
   }, [date, divisions]);
 
   useEffect(() => {
+    if (eventId) {
+      setModalOpen(true);
+    }
+  }, [eventId]);
+
+  useEffect(() => {
     getDivisions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <S.Container>
+      <EditEvent
+        open={modalOpen}
+        onClose={handleClose}
+        onRefresh={handleRefresh}
+        eventId={eventId}
+      />
       <S.Header>
         <S.Title>
           <I.IconCalendar size={20} />
@@ -115,7 +141,7 @@ export default function SchedulerComponent({ date, profile }) {
             events.map(event => (
               <li key={event.time}>
                 {event.isEvent && (
-                  <S.Item type="button" onclick={() => handleEvent(event)}>
+                  <S.Item type="button" onClick={() => handleEvent(event)}>
                     <strong>{event.name}</strong>
                   </S.Item>
                 )}

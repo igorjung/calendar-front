@@ -14,7 +14,6 @@
     "polished": "^3.4.1",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
-    "react-big-scheduler": "^0.2.7",
     "react-calendar": "^3.4.0",
     "react-dom": "^16.8.6",
     "react-icons": "^3.7.0",

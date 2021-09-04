@@ -4,6 +4,9 @@ import PropTypes from 'prop-types';
 import Calendar from 'react-calendar';
 import moment from 'moment';
 
+// Components
+import CreateEvent from '../Create';
+
 // Styles
 import * as S from './styles';
 import * as I from '~/styles/icons';
@@ -12,6 +15,7 @@ import 'react-calendar/dist/Calendar.css';
 
 export default function Filter({ onSetDate }) {
   const [day, setDay] = useState(new Date());
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     if (day) {
@@ -31,8 +35,26 @@ export default function Filter({ onSetDate }) {
     }
   }, [day, onSetDate]);
 
+  const handleClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleRefresh = () => {
+    setModalOpen(false);
+    setDay(new Date());
+  };
+
   return (
     <S.Container>
+      <CreateEvent
+        open={modalOpen}
+        onClose={handleClose}
+        onRefresh={handleRefresh}
+      />
+      <S.Button type="button" onClick={() => setModalOpen(true)}>
+        <I.IconAdd />
+        <strong>Adicionar Evento</strong>
+      </S.Button>
       <Calendar onChange={setDay} value={day} />
     </S.Container>
   );
