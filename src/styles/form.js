@@ -60,7 +60,7 @@ export const Column = styled.li`
 
     strong {
       font-weight: bold;
-      color: ${colors.tertiary};
+      color: ${colors.text};
       margin-left: 8px;
     }
   }
@@ -68,48 +68,54 @@ export const Column = styled.li`
   input {
     height: 40px;
     width: 100%;
-    border: 0;
     border-radius: 5px;
     padding: 0 15px;
     color: #000;
-    background-color: #ddd;
+    border: 1px solid #ddd;
 
     :focus {
-      border: 2px solid ${colors.secondary};
+      border: 2px solid ${colors.tertiary};
     }
   }
 
   textarea {
-    height: 160px;
+    height: 80px;
     width: 100%;
-    border: 0;
     border-radius: 5px;
     padding: 10px 15px;
     color: #000;
-    background-color: #ddd;
+    border: 1px solid #ddd;
 
     :focus {
-      border: 2px solid ${colors.secondary};
+      border: 2px solid ${colors.tertiary};
     }
   }
 
   select {
     height: 40px;
     width: 100%;
-    border: 0;
-    border-radius: 5px;
-    padding: 0 15px;
+    padding: 10px 15px;
     color: #000;
-    background-color: #ddd;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
 
     :focus {
-      border: 2px solid ${colors.secondary};
+      border: 2px solid ${colors.tertiary};
     }
   }
 
   span {
     margin: 8px 0 0 4px;
   }
+`;
+
+export const Separator = styled.div`
+  width: 100%;
+  height: 1px;
+
+  background-color: #ddd;
+  margin: 16px 0;
 `;
 
 export const Footer = styled.footer`
@@ -125,6 +131,19 @@ export const Footer = styled.footer`
   button {
     margin-right: 8px;
   }
+`;
+
+export const List = styled.ul`
+  width: 100%;
+  padding: 16px 0;
+
+  display: grid;
+  grid-row: repeat('1fr', 4);
+`;
+
+export const Item = styled.li`
+  width: 100%;
+  height: 40px;
 `;
 
 export const SelectStyled = {

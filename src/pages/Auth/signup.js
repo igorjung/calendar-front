@@ -11,7 +11,6 @@ import { signUpRequest } from '~/store/modules/auth/actions';
 // Styles
 import * as S from './styles';
 import * as F from '~/styles/form';
-import * as I from '~/styles/icons';
 
 // Color Schema
 import colors from '~/styles/colors';
@@ -43,9 +42,9 @@ export default function User() {
   });
 
   // Functions
-  function handleSubmit(data) {
+  const handleSubmit = data => {
     dispatch(signUpRequest(data));
-  }
+  };
 
   return (
     <S.Wrapper>
@@ -73,7 +72,6 @@ export default function User() {
               <F.Row>
                 <F.Column>
                   <label>
-                    <I.IconEdit />
                     <strong>Nome</strong>
                   </label>
                   <input
@@ -92,7 +90,6 @@ export default function User() {
               <F.Row>
                 <F.Column>
                   <label>
-                    <I.IconEmail />
                     <strong>E-mail</strong>
                   </label>
                   <input
@@ -111,7 +108,6 @@ export default function User() {
               <F.Row>
                 <F.Column>
                   <label>
-                    <I.IconPassword />
                     <strong>Senha</strong>
                   </label>
                   <Password
@@ -130,7 +126,6 @@ export default function User() {
               <F.Row>
                 <F.Column>
                   <label>
-                    <I.IconPassword />
                     <strong>Confirmar Senha</strong>
                   </label>
                   <Password
@@ -159,7 +154,7 @@ export default function User() {
                 </Button>
                 <Button
                   loading={loading}
-                  background={colors.secondary}
+                  background={colors.tertiary}
                   color="#fff"
                   type="submit"
                 >

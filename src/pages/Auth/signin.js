@@ -11,7 +11,6 @@ import { signInRequest } from '~/store/modules/auth/actions';
 // Styles
 import * as S from './styles';
 import * as F from '~/styles/form';
-import * as I from '~/styles/icons';
 
 // Color Schema
 import colors from '~/styles/colors';
@@ -35,9 +34,9 @@ export default function Signin() {
   });
 
   // Functions
-  function handleSubmit(data) {
+  const handleSubmit = data => {
     dispatch(signInRequest(data));
-  }
+  };
 
   return (
     <S.Wrapper>
@@ -63,7 +62,6 @@ export default function Signin() {
               <F.Row>
                 <F.Column>
                   <label>
-                    <I.IconEmail />
                     <strong>E-mail</strong>
                   </label>
                   <input
@@ -82,7 +80,6 @@ export default function Signin() {
               <F.Row>
                 <F.Column>
                   <label>
-                    <I.IconPassword />
                     <strong>Senha</strong>
                   </label>
                   <Password
@@ -110,7 +107,7 @@ export default function Signin() {
                 </Button>
                 <Button
                   loading={loading}
-                  background={colors.secondary}
+                  background={colors.tertiary}
                   color="#fff"
                   type="submit"
                 >

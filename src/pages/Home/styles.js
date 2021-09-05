@@ -1,16 +1,22 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
-  height: 60%;
+export const Wrapper = styled.div`
   width: 100%;
-  padding: 16px;
+  height: 100%;
+  overflow-y: hidden;
 
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
+`;
 
-  h1 {
-    margin-bottom: 16px;
-  }
+export const Container = styled.div`
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
 `;

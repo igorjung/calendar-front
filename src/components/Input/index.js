@@ -41,15 +41,15 @@ Password.defaultProps = {
   error: '',
 };
 
-export function MoneyInput({ name, value, error, ...rest }) {
+export function HourInput({ name, value, error, ...rest }) {
   // React Hooks
   const defaultMask = {
-    prefix: 'R$',
+    prefix: '',
     suffix: '',
     allowDecimal: true,
-    decimalSymbol: ',',
+    decimalSymbol: ':',
     decimalLimit: 2,
-    integerLimit: 3,
+    integerLimit: 2,
     allowNegative: false,
     allowLeadingZeroes: false,
     maskOptions: {},
@@ -73,14 +73,14 @@ export function MoneyInput({ name, value, error, ...rest }) {
 }
 
 // Props
-MoneyInput.propTypes = {
+HourInput.propTypes = {
   name: PropTypes.string.isRequired,
   value: PropTypes.string,
   error: PropTypes.string,
 };
 
 // Default Props
-MoneyInput.defaultProps = {
+HourInput.defaultProps = {
   value: '',
   error: '',
 };
