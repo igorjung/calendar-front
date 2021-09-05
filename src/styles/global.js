@@ -16,7 +16,7 @@ export default createGlobalStyle`
 
 html,body, #root {
   height: 100%;
-  background: #333;
+  background: ${colors.primary};
 }
 
 body, input, textarea {
@@ -40,7 +40,7 @@ button {
 
 h1 {
   font: bold 32px "Roboto";
-  color: ${colors.tertiary};
+  color: ${colors.text};
 
   @media (max-width: 990px) {
     font: bold 24px "Roboto";
@@ -49,7 +49,7 @@ h1 {
 
 h2 {
   font: bold 18px "Roboto";
-  color: ${colors.tertiary};
+  color: ${colors.text};
 
   @media (max-width: 990px) {
     font: bold 16px "Roboto";
@@ -58,7 +58,7 @@ h2 {
 
 h3 {
   font: bold 16px "Roboto";
-  color: ${colors.tertiary};
+  color: ${colors.text};
 
   @media (max-width: 990px) {
     font: bold 14px "Roboto";
@@ -67,7 +67,7 @@ h3 {
 
 strong {
   font: bold 16px "Roboto";
-  color: ${colors.tertiary};
+  color: ${colors.text};
 
   @media (max-width: 990px) {
     font: bold 14px "Roboto";
@@ -76,7 +76,7 @@ strong {
 
 p {
   font: 16px "Roboto";
-  color: ${colors.tertiary};
+  color: ${colors.text};
 
   @media (max-width: 990px) {
     font: 14px "Roboto";
@@ -91,7 +91,7 @@ span {
 a {
   text-decoration: none;
   font-weight: bold;
-  color: ${colors.tertiary};
+  color: ${colors.text};
 }
 
 ul {

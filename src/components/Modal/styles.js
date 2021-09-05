@@ -17,6 +17,7 @@ export const Container = styled(Modal)`
 `;
 
 export const Content = styled.div`
+  height: 500px;
   width: 600px;
   padding: 32px;
 
@@ -42,7 +43,7 @@ export const Content = styled.div`
     background: ${colors.primary};
   }
   ::-webkit-scrollbar-thumb {
-    background: ${colors.secondary};
+    background: ${colors.tertiary};
     border-radius: 30px;
   }
 `;
@@ -51,7 +52,7 @@ export const Header = styled.header`
   width: 100%;
   padding-bottom: 16px;
   margin-bottom: 32px;
-  border-bottom: 1px solid ${colors.secondary};
+  border-bottom: 1px solid ${colors.tertiary};
 
   display: flex;
   flex-direction: row;
@@ -59,7 +60,7 @@ export const Header = styled.header`
   justify-content: space-between;
 
   h2 {
-    color: ${colors.secondary};
+    color: ${colors.tertiary};
     font-size: 22px;
   }
 `;

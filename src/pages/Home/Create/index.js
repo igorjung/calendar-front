@@ -14,7 +14,6 @@ import api from '~/services/api';
 // Styles
 import * as S from './styles';
 import * as F from '~/styles/form';
-import * as I from '~/styles/icons';
 
 // Color Schema
 import colors from '~/styles/colors';
@@ -84,7 +83,12 @@ export default function CreateEvents({ open, onClose, onRefresh }) {
     <Modal name="Adicionar Evento" open={open} onClose={onClose}>
       <S.Content>
         {loading ? (
-          <ReactLoading type="spin" color="#fff" height={20} width={20} />
+          <ReactLoading
+            type="spin"
+            color={colors.tertiary}
+            height={20}
+            width={20}
+          />
         ) : (
           <Formik
             initialValues={{
@@ -117,7 +121,6 @@ export default function CreateEvents({ open, onClose, onRefresh }) {
                 <F.Row>
                   <F.Column>
                     <label>
-                      <I.IconEmail />
                       <strong>Nome</strong>
                     </label>
                     <input
@@ -136,8 +139,7 @@ export default function CreateEvents({ open, onClose, onRefresh }) {
                 <F.Row columns={2}>
                   <F.Column>
                     <label>
-                      <I.IconEmail />
-                      <strong>Início</strong>
+                      <strong>Dia Inicial</strong>
                     </label>
                     <input
                       id="start_day"
@@ -154,8 +156,7 @@ export default function CreateEvents({ open, onClose, onRefresh }) {
                   </F.Column>
                   <F.Column>
                     <label>
-                      <I.IconEmail />
-                      <strong>Início</strong>
+                      <strong>Hora Inicial</strong>
                     </label>
                     <input
                       id="start_hour"
@@ -175,8 +176,7 @@ export default function CreateEvents({ open, onClose, onRefresh }) {
                 <F.Row columns={2}>
                   <F.Column>
                     <label>
-                      <I.IconEmail />
-                      <strong>Final</strong>
+                      <strong>Dia Final</strong>
                     </label>
                     <input
                       id="end_day"
@@ -193,8 +193,7 @@ export default function CreateEvents({ open, onClose, onRefresh }) {
                   </F.Column>
                   <F.Column>
                     <label>
-                      <I.IconEmail />
-                      <strong>Final</strong>
+                      <strong>Hora Final</strong>
                     </label>
                     <input
                       id="end_hour"
@@ -214,7 +213,6 @@ export default function CreateEvents({ open, onClose, onRefresh }) {
                 <F.Row>
                   <F.Column>
                     <label>
-                      <I.IconEmail />
                       <strong>Descrição</strong>
                     </label>
                     <textarea
@@ -235,7 +233,6 @@ export default function CreateEvents({ open, onClose, onRefresh }) {
                 <F.Row>
                   <F.Column>
                     <label>
-                      <I.IconSwitch />
                       <strong>Dia Todo</strong>
                     </label>
                     <Switch
@@ -250,6 +247,28 @@ export default function CreateEvents({ open, onClose, onRefresh }) {
                     {errors.all_day && touched.all_day && (
                       <span>{errors.all_day}</span>
                     )}
+                  </F.Column>
+                </F.Row>
+
+                <F.Separator />
+
+                <F.Row>
+                  <F.Column>
+                    <label>
+                      <strong>Adicionar Convidado</strong>
+                    </label>
+                    <select
+                      id="user"
+                      name="user"
+                      type="text"
+                      value={values.user}
+                      error={errors.user}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    >
+                      <option />
+                    </select>
+                    {errors.user && touched.user && <span>{errors.user}</span>}
                   </F.Column>
                 </F.Row>
 

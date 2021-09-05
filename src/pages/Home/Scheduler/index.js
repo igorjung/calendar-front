@@ -1,7 +1,9 @@
 // Dependencies
 import React, { useState, useEffect } from 'react';
+import ReactLoading from 'react-loading';
 import { toast } from 'react-toastify';
 import moment from 'moment';
+import 'moment/locale/pt-br';
 import PropTypes from 'prop-types';
 
 // Services
@@ -14,11 +16,17 @@ import EditEvent from '../Edit';
 import * as S from './styles';
 import * as I from '~/styles/icons';
 
+// Color Schema
+import colors from '~/styles/colors';
+
 export default function SchedulerComponent({ date, profile }) {
   const [divisions, setDivisions] = useState([]);
   const [events, setEvents] = useState([]);
   const [eventId, setEventId] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+
+  moment.locale('pt-br');
 
   const getDivisions = () => {
     const divisionList = [];
@@ -33,6 +41,7 @@ export default function SchedulerComponent({ date, profile }) {
   };
 
   const getEvents = async () => {
+    setLoading(true);
     try {
       const { data } = await api.get(
         `/events?userId=${profile.id}&start=${date.start_at}&end=${date.end_at}`
@@ -77,6 +86,7 @@ export default function SchedulerComponent({ date, profile }) {
         toast.error(`${err.response.data.error}`);
       }
     }
+    setLoading(false);
   };
 
   const handleEvent = data => {
@@ -122,8 +132,8 @@ export default function SchedulerComponent({ date, profile }) {
       />
       <S.Header>
         <S.Title>
-          <I.IconCalendar size={20} />
-          <h2>{moment(date.start_at).format('MMMM D, YYYY')}</h2>
+          <I.IconCalendar size={24} />
+          <h2>{moment(date.start_at).format('D MMMM, YYYY')}</h2>
         </S.Title>
       </S.Header>
       <S.Body>
@@ -136,18 +146,27 @@ export default function SchedulerComponent({ date, profile }) {
               </li>
             ))}
         </S.Division>
-        <S.Grid>
-          {events &&
-            events.map(event => (
-              <li key={event.time}>
-                {event.isEvent && (
-                  <S.Item type="button" onClick={() => handleEvent(event)}>
-                    <strong>{event.name}</strong>
-                  </S.Item>
-                )}
-              </li>
-            ))}
-        </S.Grid>
+        {loading ? (
+          <ReactLoading
+            type="spin"
+            color={colors.tertiary}
+            height={20}
+            width={20}
+          />
+        ) : (
+          <S.Grid>
+            {events &&
+              events.map(event => (
+                <li key={event.time}>
+                  {event.isEvent && (
+                    <S.Item type="button" onClick={() => handleEvent(event)}>
+                      <strong>{event.name}</strong>
+                    </S.Item>
+                  )}
+                </li>
+              ))}
+          </S.Grid>
+        )}
       </S.Body>
     </S.Container>
   );

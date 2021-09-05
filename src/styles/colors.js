@@ -1,8 +1,9 @@
 export const colorScheme = {
-  primary: '#0D0D0D',
-  secondary: '#F29F05',
-  tertiary: '#DDDDDD',
-  warning: '#F27272',
+  primary: '#FAFAFA',
+  secondary: '#FFC95B',
+  tertiary: '#2C0540',
+  text: '#333',
+  warning: '#B82F4D',
 };
 
 export default colorScheme;

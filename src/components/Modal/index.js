@@ -11,9 +11,9 @@ export default function Modal({ name, onClose, open, children }) {
     <S.Container isOpen={open} contentLabel={name} ariaHideApp={false}>
       <S.Content>
         <S.Header>
-          <strong>{name}</strong>
+          <h1>{name}</h1>
           <S.Button type="button" onClick={onClose}>
-            <I.IconClose />
+            <I.IconClose size={24} />
           </S.Button>
         </S.Header>
         {children}

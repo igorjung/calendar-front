@@ -50,31 +50,10 @@ export const Footer = styled.footer`
   a {
     margin-left: 8px;
     text-decoration: underline;
-    color: ${colors.secondary};
+    color: ${colors.tertiary};
   }
 
   @media (max-width: 990px) {
     padding-bottom: 64px;
-  }
-`;
-
-export const Logo = styled.div`
-  width: 100%;
-
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-
-  margin-bottom: 32px;
-
-  strong {
-    color: ${colors.secondary};
-    font-size: 24px;
-  }
-
-  p {
-    margin-left: 4px;
-    font-size: 24px;
   }
 `;

@@ -1,5 +1,8 @@
 import styled from 'styled-components';
 
+// Color Schema
+import colors from '~/styles/colors';
+
 export const Container = styled.div`
   width: 100%;
   height: 100%;
@@ -39,6 +42,18 @@ export const Body = styled.div`
   height: 100%;
 
   overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: ${colors.primary};
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: ${colors.tertiary};
+    border-radius: 30px;
+  }
 
   display: flex;
   flex-direction: row;
@@ -47,19 +62,20 @@ export const Body = styled.div`
 `;
 
 export const Division = styled.ul`
-  width: 60px;
+  width: 70px;
   height: 100%;
 
   display: grid;
-  grid-row: repeat('1fr', 24);
-  border-right: 1px solid #ddd;
+  grid-row: repeat('40px', 24);
 
   li {
+    height: 40px;
     width: 100%;
     display: flex;
     flex-direction: row;
     align-items: flex-end;
     justify-content: flex-end;
+    border-right: 1px solid #ddd;
 
     hr {
       width: 10px;
@@ -74,9 +90,10 @@ export const Grid = styled.div`
   height: 100%;
 
   display: grid;
-  grid-row: repeat('1fr', 24);
+  grid-row: repeat('40px', 24);
 
   li {
+    height: 40px;
     width: 100%;
 
     display: flex;
@@ -96,9 +113,9 @@ export const Item = styled.button`
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  background-color: #fff;
+  background-color: ${colors.secondary};
 
   strong {
-    color: #000000;
+    color: #fff;
   }
 `;

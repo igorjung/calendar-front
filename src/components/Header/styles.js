@@ -14,6 +14,7 @@ export const Wrapper = styled.div`
   justify-content: flex-start;
 
   background-color: ${colors.primary};
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 `;
 
 export const Container = styled.div`

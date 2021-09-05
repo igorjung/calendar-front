@@ -17,11 +17,11 @@ export default function Header({ profile }) {
     <S.Wrapper>
       <S.Container>
         <S.Nav>
-          <I.IconUser />
+          <I.IconUser size={24} />
           <strong>{profile && profile.name}</strong>
         </S.Nav>
-        <S.Button type="button" onClick={() => dispatch(signOut)}>
-          <I.IconLogout />
+        <S.Button type="button" onClick={() => dispatch(signOut())}>
+          <I.IconLogout size={24} />
           <strong>Sair</strong>
         </S.Button>
       </S.Container>

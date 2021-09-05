@@ -1,5 +1,6 @@
 // Dependencies
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import ReactLoading from 'react-loading';
 import Switch from 'react-switch';
 import moment from 'moment';
@@ -24,8 +25,14 @@ import Modal from '~/components/Modal';
 import Button from '~/components/Button';
 
 export default function EditEvents({ open, onClose, onRefresh, eventId }) {
+  // States from Redux
+  const profile = useSelector(state => state.user.profile);
+
   // States
   const [event, setEvent] = useState(null);
+  const [guests, setGuests] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [guestLoading, setGuestLoading] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Validators
@@ -40,6 +47,43 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
   });
 
   // Functions
+  const getEvent = async () => {
+    setGuestLoading(true);
+    try {
+      const { data } = await api.get(`/events/${eventId}`);
+      setEvent(data);
+    } catch (err) {
+      if (!err.response || err.response.data.error === undefined) {
+        toast.error(`Um erro aconteceu, tente novamente mais tarde.`);
+      } else {
+        toast.error(`${err.response.data.error}`);
+      }
+    }
+    setGuestLoading(false);
+  };
+
+  const getUsers = async () => {
+    setGuestLoading(true);
+    try {
+      const { data } = await api.get(`/users`);
+      const list = [];
+      data.forEach(user => {
+        const isGuest = guests.find(guest => guest.id !== user.id);
+        if (user.id !== profile.id && !isGuest) {
+          list.push(user);
+        }
+      });
+      setUsers(list);
+    } catch (err) {
+      if (!err.response || err.response.data.error === undefined) {
+        toast.error(`Um erro aconteceu, tente novamente mais tarde.`);
+      } else {
+        toast.error(`${err.response.data.error}`);
+      }
+    }
+    setGuestLoading(false);
+  };
+
   const handleSubmit = async values => {
     setLoading(true);
     try {
@@ -96,11 +140,11 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
     setLoading(false);
   };
 
-  const getEvent = async () => {
-    setLoading(true);
+  const getGuests = async () => {
+    setGuestLoading(true);
     try {
-      const { data } = await api.get(`/events/${eventId}`);
-      setEvent(data);
+      const { data } = await api.get(`/guests?eventId=${eventId}`);
+      setGuests(data);
     } catch (err) {
       if (!err.response || err.response.data.error === undefined) {
         toast.error(`Um erro aconteceu, tente novamente mais tarde.`);
@@ -108,21 +152,68 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
         toast.error(`${err.response.data.error}`);
       }
     }
-    setLoading(false);
+    setGuestLoading(false);
+  };
+
+  const handleDeleteGuest = async id => {
+    setGuestLoading(true);
+    try {
+      await api.delete(`/guests/${id}`);
+      getEvent();
+    } catch (err) {
+      if (!err.response || err.response.data.error === undefined) {
+        toast.error(`Um erro aconteceu, tente novamente mais tarde.`);
+      } else {
+        toast.error(`${err.response.data.error}`);
+      }
+    }
+    setGuestLoading(false);
+  };
+
+  const handleAddGuest = async userId => {
+    setGuestLoading(true);
+    try {
+      const data = {
+        userId,
+        eventId: event.id,
+      };
+      await api.post(`/guests`, data);
+      getEvent();
+    } catch (err) {
+      if (!err.response || err.response.data.error === undefined) {
+        toast.error(`Um erro aconteceu, tente novamente mais tarde.`);
+      } else {
+        toast.error(`${err.response.data.error}`);
+      }
+    }
+    setGuestLoading(false);
   };
 
   useEffect(() => {
     if (eventId) {
       getEvent();
+      getGuests();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventId]);
+
+  useEffect(() => {
+    if (profile) {
+      getUsers();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile, guests]);
 
   return (
     <Modal name="Editar Evento" open={open} onClose={onClose}>
       <S.Content>
         {loading || !event ? (
-          <ReactLoading type="spin" color="#fff" height={20} width={20} />
+          <ReactLoading
+            type="spin"
+            color={colors.tertiary}
+            height={20}
+            width={20}
+          />
         ) : (
           <Formik
             initialValues={{
@@ -161,7 +252,6 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                 <F.Row>
                   <F.Column>
                     <label>
-                      <I.IconEmail />
                       <strong>Nome</strong>
                     </label>
                     <input
@@ -180,8 +270,7 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                 <F.Row columns={2}>
                   <F.Column>
                     <label>
-                      <I.IconEmail />
-                      <strong>Início</strong>
+                      <strong>Dia Inicial</strong>
                     </label>
                     <input
                       id="start_day"
@@ -198,8 +287,7 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                   </F.Column>
                   <F.Column>
                     <label>
-                      <I.IconEmail />
-                      <strong>Início</strong>
+                      <strong>Hora Inicial</strong>
                     </label>
                     <input
                       id="start_hour"
@@ -219,8 +307,7 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                 <F.Row columns={2}>
                   <F.Column>
                     <label>
-                      <I.IconEmail />
-                      <strong>Final</strong>
+                      <strong>Dia Final</strong>
                     </label>
                     <input
                       id="end_day"
@@ -237,8 +324,7 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                   </F.Column>
                   <F.Column>
                     <label>
-                      <I.IconEmail />
-                      <strong>Final</strong>
+                      <strong>Hora Final</strong>
                     </label>
                     <input
                       id="end_hour"
@@ -258,7 +344,6 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                 <F.Row>
                   <F.Column>
                     <label>
-                      <I.IconEmail />
                       <strong>Descrição</strong>
                     </label>
                     <textarea
@@ -279,7 +364,6 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                 <F.Row>
                   <F.Column>
                     <label>
-                      <I.IconSwitch />
                       <strong>Dia Todo</strong>
                     </label>
                     <Switch
@@ -296,6 +380,60 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                     )}
                   </F.Column>
                 </F.Row>
+
+                <F.Separator />
+
+                {guestLoading ? (
+                  <ReactLoading
+                    type="spin"
+                    color={colors.tertiary}
+                    height={20}
+                    width={20}
+                  />
+                ) : (
+                  <>
+                    <F.Row>
+                      <F.Column>
+                        <label>
+                          <strong>Adicionar Convidado</strong>
+                        </label>
+                        <select
+                          id="userId"
+                          name="userId"
+                          type="text"
+                          value={values.userId}
+                          error={errors.userId}
+                          onChange={() => handleAddGuest(values.userId)}
+                          onBlur={handleBlur}
+                        >
+                          {users &&
+                            users.map(user => (
+                              <option key={user.id}>{user.name}</option>
+                            ))}
+                        </select>
+                        {errors.userId && touched.userId && (
+                          <span>{errors.userId}</span>
+                        )}
+                      </F.Column>
+                    </F.Row>
+
+                    {guests && guests[0] && (
+                      <F.List>
+                        {guests.map(item => (
+                          <F.Item key={item.id}>
+                            <strong>{item.user.name}</strong>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteGuest(item.id)}
+                            >
+                              <I.IconClose />
+                            </button>
+                          </F.Item>
+                        ))}
+                      </F.List>
+                    )}
+                  </>
+                )}
 
                 <F.Footer>
                   <Button
