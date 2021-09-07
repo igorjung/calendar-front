@@ -18,6 +18,12 @@ export const Title = styled.h1`
   font: 24px 'Roboto';
 `;
 
+export const SubTitle = styled.h2`
+  font: 18px 'Roboto';
+  font-weight: bold;
+  margin-bottom: 16px;
+`;
+
 export const Row = styled.ul`
   width: 100%;
   display: grid;
@@ -99,6 +105,7 @@ export const Column = styled.li`
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #fff;
+    font-size: 16px;
 
     :focus {
       border: 2px solid ${colors.tertiary};
@@ -137,13 +144,30 @@ export const List = styled.ul`
   width: 100%;
   padding: 16px 0;
 
-  display: grid;
-  grid-row: repeat('1fr', 4);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
 `;
 
 export const Item = styled.li`
-  width: 100%;
   height: 40px;
+  padding: 5px 15px;
+  background-color: #ddd;
+  border-radius: 5px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  strong {
+    margin-right: 4px;
+  }
+
+  & + li {
+    margin-top: 8px;
+  }
 `;
 
 export const SelectStyled = {

@@ -6,6 +6,9 @@ import moment from 'moment';
 import 'moment/locale/pt-br';
 import PropTypes from 'prop-types';
 
+// Utils
+import divisions from '~/utils/divisions';
+
 // Services
 import api from '~/services/api';
 
@@ -20,25 +23,12 @@ import * as I from '~/styles/icons';
 import colors from '~/styles/colors';
 
 export default function SchedulerComponent({ date, profile }) {
-  const [divisions, setDivisions] = useState([]);
   const [events, setEvents] = useState([]);
   const [eventId, setEventId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
   moment.locale('pt-br');
-
-  const getDivisions = () => {
-    const divisionList = [];
-    for (let time = 0; time < 24; time++) {
-      divisionList.push({
-        id: time,
-        time: `${time}:00`,
-      });
-    }
-
-    setDivisions(divisionList);
-  };
 
   const getEvents = async () => {
     setLoading(true);
@@ -50,7 +40,7 @@ export default function SchedulerComponent({ date, profile }) {
       const eventList = [];
       divisions.forEach(division => {
         let eventItem = {
-          time: division.time,
+          time: division,
           isEvent: false,
           id: '',
           name: '',
@@ -59,14 +49,19 @@ export default function SchedulerComponent({ date, profile }) {
 
         data.forEach(event => {
           const divisionTime = moment(event.start_at).set({
-            hour: division.id,
-            minute: 0,
+            hour: division.split(':')[0],
+            minute: division.split(':')[1],
             second: 0,
             millisecond: 0,
           });
-          if (moment(divisionTime).isBetween(event.start_at, event.end_at)) {
+
+          if (
+            moment(divisionTime).isSame(event.start_at) ||
+            moment(divisionTime).isSame(event.end_at) ||
+            moment(divisionTime).isBetween(event.start_at, event.end_at)
+          ) {
             eventItem = {
-              time: division.time,
+              time: division,
               isEvent: true,
               id: event.id,
               name: event.name,
@@ -117,11 +112,6 @@ export default function SchedulerComponent({ date, profile }) {
     }
   }, [eventId]);
 
-  useEffect(() => {
-    getDivisions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <S.Container>
       <EditEvent
@@ -140,8 +130,8 @@ export default function SchedulerComponent({ date, profile }) {
         <S.Division>
           {divisions &&
             divisions.map(division => (
-              <li key={division.id}>
-                <p>{division.time}</p>
+              <li key={division}>
+                <p>{division}</p>
                 <hr />
               </li>
             ))}

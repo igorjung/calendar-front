@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import 'moment/locale/pt-br';
 
 // Components
 import CreateEvent from '../Create';
@@ -14,6 +15,8 @@ export default function Filter({ onSetDate }) {
   const [day, setDay] = useState(new Date());
   const [modalOpen, setModalOpen] = useState(false);
   const [visible, setVisible] = useState(true);
+
+  moment.locale('pt-br');
 
   const handleClose = () => {
     setModalOpen(false);
@@ -28,12 +31,10 @@ export default function Filter({ onSetDate }) {
     if (day) {
       const start_at = moment(day)
         .startOf('day')
-        .utc()
-        .format('YYYY-MM-DDThh:mm:ss');
+        .format();
       const end_at = moment(day)
         .endOf('day')
-        .utc()
-        .format('YYYY-MM-DDThh:mm:ss');
+        .format('YYYY-MM-DDTHH:mm:ss');
 
       onSetDate({
         start_at,

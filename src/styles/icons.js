@@ -10,6 +10,7 @@ import {
   Close,
   Logout,
   Menu,
+  Delete,
 } from '@styled-icons/material';
 
 // Color Schema
@@ -80,6 +81,15 @@ export const IconClose = styled(Close)`
 
 export const IconMenu = styled(Menu)`
   color: ${colors.tertiary};
+  height: ${props => (props.size ? `${props.size}px` : '18px')};
+
+  @media (max-height: 990px) {
+    height: ${props => (props.size ? `${props.size - 2}px` : '18px')};
+  }
+`;
+
+export const IconTrash = styled(Delete)`
+  color: ${colors.warning};
   height: ${props => (props.size ? `${props.size}px` : '18px')};
 
   @media (max-height: 990px) {

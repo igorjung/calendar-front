@@ -8,6 +8,10 @@ import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import PropTypes from 'prop-types';
+import 'moment/locale/pt-br';
+
+// Utils
+import divisions from '~/utils/divisions';
 
 // Services
 import api from '~/services/api';
@@ -39,11 +43,17 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
   const Schema = Yup.object().shape({
     name: Yup.string().required('Esse campo é obrigatório'),
     description: Yup.string(),
-    start_day: Yup.string(),
-    start_hour: Yup.string(),
-    end_day: Yup.string(),
-    end_hour: Yup.string(),
-    all_day: Yup.string(),
+    start_day: Yup.string().required(),
+    start_hour: Yup.string().when('all_day', (all_day, field) =>
+      all_day ? field.required() : field
+    ),
+    end_day: Yup.string().when('all_day', (all_day, field) =>
+      all_day ? field.required() : field
+    ),
+    end_hour: Yup.string().when('all_day', (all_day, field) =>
+      all_day ? field.required() : field
+    ),
+    all_day: Yup.bool(),
   });
 
   // Functions
@@ -68,8 +78,9 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
       const { data } = await api.get(`/users`);
       const list = [];
       data.forEach(user => {
-        const isGuest = guests.find(guest => guest.id !== user.id);
+        const isGuest = guests.find(guest => guest.user.id === user.id);
         if (user.id !== profile.id && !isGuest) {
+          console.log(user, guests, isGuest);
           list.push(user);
         }
       });
@@ -85,22 +96,18 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
   };
 
   const handleSubmit = async values => {
+    moment.locale('pt-br');
+
     setLoading(true);
     try {
-      let start_at = moment(values.start_day)
-        .set({
-          hour: values.start_hour.split(':')[0],
-          minute: values.start_hour.split(':')[1],
-        })
-        .utc();
-
-      let end_at = moment(values.end_day)
-        .set({
-          hour: values.end_hour.split(':')[0],
-          minute: values.end_hour.split(':')[1],
-        })
-        .utc();
-
+      let start_at = moment(values.start_day).set({
+        hour: values.start_hour.split(':')[0],
+        minute: values.start_hour.split(':')[1],
+      });
+      let end_at = moment(values.end_day).set({
+        hour: values.end_hour.split(':')[0],
+        minute: values.end_hour.split(':')[1],
+      });
       if (values.all_day) {
         start_at = start_at.startOf('day');
         end_at = end_at.endOf('day');
@@ -113,6 +120,7 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
         description: values.description,
         all_day: values.all_day,
       };
+      console.log(data);
       await api.put(`/events/${eventId}`, data);
       onRefresh();
     } catch (err) {
@@ -159,7 +167,7 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
     setGuestLoading(true);
     try {
       await api.delete(`/guests/${id}`);
-      getEvent();
+      getGuests();
     } catch (err) {
       if (!err.response || err.response.data.error === undefined) {
         toast.error(`Um erro aconteceu, tente novamente mais tarde.`);
@@ -174,11 +182,11 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
     setGuestLoading(true);
     try {
       const data = {
-        userId,
-        eventId: event.id,
+        user_id: userId,
+        event_id: event.id,
       };
       await api.post(`/guests`, data);
-      getEvent();
+      getGuests();
     } catch (err) {
       if (!err.response || err.response.data.error === undefined) {
         toast.error(`Um erro aconteceu, tente novamente mais tarde.`);
@@ -236,6 +244,8 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
               description: event.description || '',
 
               all_day: event.all_day || false,
+
+              userId: '',
             }}
             validationSchema={Schema}
             onSubmit={handleSubmit}
@@ -267,121 +277,176 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                   </F.Column>
                 </F.Row>
 
-                <F.Row columns={2}>
-                  <F.Column>
-                    <label>
-                      <strong>Dia Inicial</strong>
-                    </label>
-                    <input
-                      id="start_day"
-                      name="start_day"
-                      type="date"
-                      value={values.start_day}
-                      error={errors.start_day}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    {errors.start_day && touched.start_day && (
-                      <span>{errors.start_day}</span>
-                    )}
-                  </F.Column>
-                  <F.Column>
-                    <label>
-                      <strong>Hora Inicial</strong>
-                    </label>
-                    <input
-                      id="start_hour"
-                      name="start_hour"
-                      type="text"
-                      value={values.start_hour}
-                      error={errors.start_hour}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    {errors.start_hour && touched.start_hour && (
-                      <span>{errors.start_hour}</span>
-                    )}
-                  </F.Column>
-                </F.Row>
+                {values.all_day ? (
+                  <>
+                    <F.Row columns={2}>
+                      <F.Column>
+                        <label>
+                          <strong>Dia Todo</strong>
+                        </label>
+                        <Switch
+                          onChange={e => {
+                            setFieldValue('all_day', e);
+                          }}
+                          checked={values.all_day || false}
+                          onColor={colors.secondary}
+                          offColor={colors.tertiary}
+                        />
 
-                <F.Row columns={2}>
-                  <F.Column>
-                    <label>
-                      <strong>Dia Final</strong>
-                    </label>
-                    <input
-                      id="end_day"
-                      name="end_day"
-                      type="date"
-                      value={values.start_day}
-                      error={errors.start_day}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    {errors.start_day && touched.start_day && (
-                      <span>{errors.start_day}</span>
-                    )}
-                  </F.Column>
-                  <F.Column>
-                    <label>
-                      <strong>Hora Final</strong>
-                    </label>
-                    <input
-                      id="end_hour"
-                      name="end_hour"
-                      type="text"
-                      value={values.end_hour}
-                      error={errors.end_hour}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    {errors.end_hour && touched.end_hour && (
-                      <span>{errors.end_hour}</span>
-                    )}
-                  </F.Column>
-                </F.Row>
+                        {errors.all_day && touched.all_day && (
+                          <span>{errors.all_day}</span>
+                        )}
+                      </F.Column>
+                      <F.Column>
+                        <label>
+                          <strong>Dia Inicial</strong>
+                        </label>
+                        <input
+                          id="start_day"
+                          name="start_day"
+                          type="date"
+                          value={values.start_day}
+                          error={errors.start_day}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                        />
+                        {errors.start_day && touched.start_day && (
+                          <span>{errors.start_day}</span>
+                        )}
+                      </F.Column>
+                    </F.Row>
+                  </>
+                ) : (
+                  <>
+                    <F.Row>
+                      <F.Column>
+                        <label>
+                          <strong>Dia Todo</strong>
+                        </label>
+                        <Switch
+                          onChange={e => {
+                            setFieldValue('all_day', e);
+                          }}
+                          checked={values.all_day || false}
+                          onColor={colors.secondary}
+                          offColor={colors.tertiary}
+                        />
 
-                <F.Row>
-                  <F.Column>
-                    <label>
-                      <strong>Descrição</strong>
-                    </label>
-                    <textarea
-                      id="description"
-                      name="description"
-                      type="text"
-                      value={values.description}
-                      error={errors.description}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    {errors.description && touched.description && (
-                      <span>{errors.description}</span>
-                    )}
-                  </F.Column>
-                </F.Row>
-
-                <F.Row>
-                  <F.Column>
-                    <label>
-                      <strong>Dia Todo</strong>
-                    </label>
-                    <Switch
-                      onChange={e => {
-                        setFieldValue('all_day', e);
-                      }}
-                      checked={values.all_day || false}
-                      onColor={colors.secondary}
-                      offColor={colors.tertiary}
-                    />
-
-                    {errors.all_day && touched.all_day && (
-                      <span>{errors.all_day}</span>
-                    )}
-                  </F.Column>
-                </F.Row>
+                        {errors.all_day && touched.all_day && (
+                          <span>{errors.all_day}</span>
+                        )}
+                      </F.Column>
+                    </F.Row>
+                    <F.Row columns={2}>
+                      <F.Column>
+                        <label>
+                          <strong>Dia Inicial</strong>
+                        </label>
+                        <input
+                          id="start_day"
+                          name="start_day"
+                          type="date"
+                          value={values.start_day}
+                          error={errors.start_day}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                        />
+                        {errors.start_day && touched.start_day && (
+                          <span>{errors.start_day}</span>
+                        )}
+                      </F.Column>
+                      <F.Column>
+                        <label>
+                          <strong>Hora Inicial</strong>
+                        </label>
+                        <select
+                          id="start_hour"
+                          name="start_hour"
+                          type="text"
+                          value={values.start_hour}
+                          error={errors.start_hour}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                        >
+                          {divisions &&
+                            divisions.map(division => (
+                              <option key={division} value={division}>
+                                {division}
+                              </option>
+                            ))}
+                        </select>
+                        {errors.start_hour && touched.start_hour && (
+                          <span>{errors.start_hour}</span>
+                        )}
+                      </F.Column>
+                    </F.Row>
+                    <F.Row columns={2}>
+                      <F.Column>
+                        <label>
+                          <strong>Dia Final</strong>
+                        </label>
+                        <input
+                          id="end_day"
+                          name="end_day"
+                          type="date"
+                          value={values.start_day}
+                          error={errors.start_day}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                        />
+                        {errors.start_day && touched.start_day && (
+                          <span>{errors.start_day}</span>
+                        )}
+                      </F.Column>
+                      <F.Column>
+                        <label>
+                          <strong>Hora Final</strong>
+                        </label>
+                        <select
+                          id="end_hour"
+                          name="end_hour"
+                          type="text"
+                          value={values.end_hour}
+                          error={errors.end_hour}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                        >
+                          {divisions &&
+                            divisions.map(division => (
+                              <option key={division} value={division}>
+                                {division}
+                              </option>
+                            ))}
+                        </select>
+                        {errors.end_hour && touched.end_hour && (
+                          <span>{errors.end_hour}</span>
+                        )}
+                      </F.Column>
+                    </F.Row>
+                    <F.Row>
+                      <F.Column>
+                        <label>
+                          <strong>Descrição</strong>
+                        </label>
+                        <textarea
+                          id="description"
+                          name="description"
+                          type="text"
+                          value={values.description}
+                          error={errors.description}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                        />
+                        {errors.description && touched.description && (
+                          <span>{errors.description}</span>
+                        )}
+                      </F.Column>
+                    </F.Row>
+                  </>
+                )}
 
                 <F.Separator />
+                <F.SubTitle>Convidados</F.SubTitle>
 
                 {guestLoading ? (
                   <ReactLoading
@@ -392,28 +457,40 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                   />
                 ) : (
                   <>
-                    <F.Row>
+                    <F.Row columns={2}>
                       <F.Column>
-                        <label>
-                          <strong>Adicionar Convidado</strong>
-                        </label>
                         <select
                           id="userId"
                           name="userId"
                           type="text"
                           value={values.userId}
                           error={errors.userId}
-                          onChange={() => handleAddGuest(values.userId)}
+                          onChange={handleChange}
                           onBlur={handleBlur}
                         >
+                          <option value="" />
                           {users &&
                             users.map(user => (
-                              <option key={user.id}>{user.name}</option>
+                              <option key={user.id} value={user.id}>
+                                {user.name}
+                              </option>
                             ))}
                         </select>
                         {errors.userId && touched.userId && (
                           <span>{errors.userId}</span>
                         )}
+                      </F.Column>
+                      <F.Column>
+                        <Button
+                          loading={guestLoading}
+                          background={colors.secondary}
+                          disabled={!values.userId}
+                          color="#fff"
+                          type="submit"
+                          onClick={() => handleAddGuest(values.userId)}
+                        >
+                          <strong>Adicionar</strong>
+                        </Button>
                       </F.Column>
                     </F.Row>
 
@@ -426,7 +503,7 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                               type="button"
                               onClick={() => handleDeleteGuest(item.id)}
                             >
-                              <I.IconClose />
+                              <I.IconTrash size={20} />
                             </button>
                           </F.Item>
                         ))}
@@ -475,7 +552,11 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
 // Props
 EditEvents.propTypes = {
   open: PropTypes.bool.isRequired,
-  eventId: PropTypes.number.isRequired,
+  eventId: PropTypes.number,
   onClose: PropTypes.func.isRequired,
   onRefresh: PropTypes.func.isRequired,
+};
+
+EditEvents.defaultProps = {
+  eventId: null,
 };
