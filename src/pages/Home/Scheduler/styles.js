@@ -66,14 +66,14 @@ export const Division = styled.ul`
   height: 100%;
 
   display: grid;
-  grid-row: repeat('40px', 24);
+  grid-row: repeat(24, '40px');
 
   li {
     height: 40px;
     width: 100%;
     display: flex;
     flex-direction: row;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: flex-end;
     border-right: 1px solid #ddd;
 
@@ -90,32 +90,28 @@ export const Grid = styled.div`
   height: 100%;
 
   display: grid;
-  grid-row: repeat('40px', 24);
-
-  li {
-    height: 40px;
-    width: 100%;
-
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-
-    border-bottom: 1px solid #ddd;
-  }
+  grid-row: repeat(24, '40px');
 `;
 
 export const Item = styled.button`
+  height: 40px;
   width: 100%;
-  height: 100%;
 
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: flex-start;
-  background-color: ${colors.secondary};
+  justify-content: center;
+  background-color: ${({ isEvent }) => (isEvent ? colors.secondary : 'none')};
+
+  border-bottom: ${({ isEvent }) => (isEvent ? 0 : '1px solid #ddd')};
+
+  :disabled {
+    cursor: default;
+  }
 
   strong {
     color: #fff;
+    font-size: 18px;
+    padding-left: 32px;
   }
 `;

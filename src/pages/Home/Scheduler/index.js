@@ -45,9 +45,14 @@ export default function SchedulerComponent({ date, profile }) {
           id: '',
           name: '',
           description: '',
+          isGuested: false,
+          isFirst: false,
         };
 
         data.forEach(event => {
+          const isGuested = event.user_id !== profile.id;
+          const isNotFirst = eventList.filter(item => item.id === event.id)[0];
+
           const divisionTime = moment(event.start_at).set({
             hour: division.split(':')[0],
             minute: division.split(':')[1],
@@ -57,7 +62,6 @@ export default function SchedulerComponent({ date, profile }) {
 
           if (
             moment(divisionTime).isSame(event.start_at) ||
-            moment(divisionTime).isSame(event.end_at) ||
             moment(divisionTime).isBetween(event.start_at, event.end_at)
           ) {
             eventItem = {
@@ -66,6 +70,8 @@ export default function SchedulerComponent({ date, profile }) {
               id: event.id,
               name: event.name,
               description: event.name,
+              isGuested,
+              isFirst: !isNotFirst,
             };
           }
         });
@@ -148,10 +154,23 @@ export default function SchedulerComponent({ date, profile }) {
             {events &&
               events.map(event => (
                 <li key={event.time}>
-                  {event.isEvent && (
-                    <S.Item type="button" onClick={() => handleEvent(event)}>
-                      <strong>{event.name}</strong>
+                  {event.isEvent ? (
+                    <S.Item
+                      type="button"
+                      isEvent={event.isEvent}
+                      isGuested={event.isGuested}
+                      disabled={event.isGuested}
+                      onClick={() => handleEvent(event)}
+                    >
+                      {event.isFirst && (
+                        <strong>
+                          {event.name}
+                          {event.isGuested && ' (convidado)'}
+                        </strong>
+                      )}
                     </S.Item>
+                  ) : (
+                    <S.Item type="button" isEvent={event.isEvent} disabled />
                   )}
                 </li>
               ))}

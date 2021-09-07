@@ -47,6 +47,7 @@ export const Divisions = [
   '22:30',
   '23:00',
   '23:30',
+  '23:35',
 ];
 
 export default Divisions;

@@ -57,6 +57,25 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
   });
 
   // Functions
+
+  const handleClose = () => {
+    setEvent(null);
+    setGuests([]);
+    setUsers([]);
+    setGuestLoading(false);
+    setLoading(false);
+    onClose();
+  };
+
+  const handleRefresh = () => {
+    setEvent(null);
+    setGuests([]);
+    setUsers([]);
+    setGuestLoading(false);
+    setLoading(false);
+    onRefresh();
+  };
+
   const getEvent = async () => {
     setGuestLoading(true);
     try {
@@ -80,7 +99,6 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
       data.forEach(user => {
         const isGuest = guests.find(guest => guest.user.id === user.id);
         if (user.id !== profile.id && !isGuest) {
-          console.log(user, guests, isGuest);
           list.push(user);
         }
       });
@@ -109,8 +127,8 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
         minute: values.end_hour.split(':')[1],
       });
       if (values.all_day) {
-        start_at = start_at.startOf('day');
-        end_at = end_at.endOf('day');
+        start_at = moment(values.start_day).startOf('day');
+        end_at = moment(values.start_day).endOf('day');
       }
 
       const data = {
@@ -120,9 +138,8 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
         description: values.description,
         all_day: values.all_day,
       };
-      console.log(data);
       await api.put(`/events/${eventId}`, data);
-      onRefresh();
+      handleRefresh();
     } catch (err) {
       if (!err.response || err.response.data.error === undefined) {
         toast.error(`Um erro aconteceu, tente novamente mais tarde.`);
@@ -137,7 +154,7 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
     setLoading(true);
     try {
       await api.delete(`/events/${eventId}`);
-      onRefresh();
+      handleRefresh();
     } catch (err) {
       if (!err.response || err.response.data.error === undefined) {
         toast.error(`Um erro aconteceu, tente novamente mais tarde.`);
@@ -213,7 +230,7 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
   }, [profile, guests]);
 
   return (
-    <Modal name="Editar Evento" open={open} onClose={onClose}>
+    <Modal name="Editar Evento" open={open} onClose={handleClose}>
       <S.Content>
         {loading || !event ? (
           <ReactLoading
@@ -231,14 +248,14 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                 ? moment(event.start_at).format('YYYY-MM-DD')
                 : '',
               start_hour: event.start_at
-                ? moment(event.start_at).format('hh:mm')
+                ? moment(event.start_at).format('HH:mm')
                 : '',
 
               end_day: event.end_at
                 ? moment(event.end_at).format('YYYY-MM-DD')
                 : '',
               end_hour: event.end_at
-                ? moment(event.end_at).format('hh:mm')
+                ? moment(event.end_at).format('HH:mm')
                 : '',
 
               description: event.description || '',
@@ -389,13 +406,13 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                           id="end_day"
                           name="end_day"
                           type="date"
-                          value={values.start_day}
-                          error={errors.start_day}
+                          value={values.end_day}
+                          error={errors.end_day}
                           onChange={handleChange}
                           onBlur={handleBlur}
                         />
-                        {errors.start_day && touched.start_day && (
-                          <span>{errors.start_day}</span>
+                        {errors.end_day && touched.end_day && (
+                          <span>{errors.end_day}</span>
                         )}
                       </F.Column>
                       <F.Column>
@@ -423,27 +440,28 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                         )}
                       </F.Column>
                     </F.Row>
-                    <F.Row>
-                      <F.Column>
-                        <label>
-                          <strong>Descrição</strong>
-                        </label>
-                        <textarea
-                          id="description"
-                          name="description"
-                          type="text"
-                          value={values.description}
-                          error={errors.description}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                        />
-                        {errors.description && touched.description && (
-                          <span>{errors.description}</span>
-                        )}
-                      </F.Column>
-                    </F.Row>
                   </>
                 )}
+
+                <F.Row>
+                  <F.Column>
+                    <label>
+                      <strong>Descrição</strong>
+                    </label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      type="text"
+                      value={values.description}
+                      error={errors.description}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    {errors.description && touched.description && (
+                      <span>{errors.description}</span>
+                    )}
+                  </F.Column>
+                </F.Row>
 
                 <F.Separator />
                 <F.SubTitle>Convidados</F.SubTitle>
@@ -518,7 +536,7 @@ export default function EditEvents({ open, onClose, onRefresh, eventId }) {
                     background="#ddd"
                     color="#666"
                     type="button"
-                    onClick={onClose}
+                    onClick={handleClose}
                   >
                     <strong>Cancelar</strong>
                   </Button>
