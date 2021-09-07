@@ -40,7 +40,8 @@ export const Container = styled.div`
 
 export const Footer = styled.footer`
   width: 100%;
-  margin-top: 32px;
+  margin-top: 16px;
+  padding-bottom: 64px;
 
   display: flex;
   flex-direction: row;
@@ -51,9 +52,5 @@ export const Footer = styled.footer`
     margin-left: 8px;
     text-decoration: underline;
     color: ${colors.tertiary};
-  }
-
-  @media (max-width: 990px) {
-    padding-bottom: 64px;
   }
 `;

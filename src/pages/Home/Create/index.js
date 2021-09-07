@@ -62,8 +62,8 @@ export default function CreateEvents({ open, onClose, onRefresh }) {
         minute: values.end_hour.split(':')[1],
       });
       if (values.all_day) {
-        start_at = start_at.startOf('day');
-        end_at = end_at.endOf('day');
+        start_at = moment(values.start_day).startOf('day');
+        end_at = moment(values.start_day).endOf('day');
       }
 
       const data = {
@@ -101,12 +101,10 @@ export default function CreateEvents({ open, onClose, onRefresh }) {
               name: '',
 
               start_day: moment().format('YYYY-MM-DD'),
-              start_hour: moment().format('hh:mm'),
+              start_hour: '00:00',
 
               end_day: moment().format('YYYY-MM-DD'),
-              end_hour: moment()
-                .add(1, 'hours')
-                .format('hh:mm'),
+              end_hour: '00:00',
 
               description: '',
 
@@ -254,13 +252,13 @@ export default function CreateEvents({ open, onClose, onRefresh }) {
                           id="end_day"
                           name="end_day"
                           type="date"
-                          value={values.start_day}
-                          error={errors.start_day}
+                          value={values.end_day}
+                          error={errors.end_day}
                           onChange={handleChange}
                           onBlur={handleBlur}
                         />
-                        {errors.start_day && touched.start_day && (
-                          <span>{errors.start_day}</span>
+                        {errors.end_day && touched.end_day && (
+                          <span>{errors.end_day}</span>
                         )}
                       </F.Column>
                       <F.Column>
@@ -288,27 +286,28 @@ export default function CreateEvents({ open, onClose, onRefresh }) {
                         )}
                       </F.Column>
                     </F.Row>
-                    <F.Row>
-                      <F.Column>
-                        <label>
-                          <strong>Descrição</strong>
-                        </label>
-                        <textarea
-                          id="description"
-                          name="description"
-                          type="text"
-                          value={values.description}
-                          error={errors.description}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                        />
-                        {errors.description && touched.description && (
-                          <span>{errors.description}</span>
-                        )}
-                      </F.Column>
-                    </F.Row>
                   </>
                 )}
+
+                <F.Row>
+                  <F.Column>
+                    <label>
+                      <strong>Descrição</strong>
+                    </label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      type="text"
+                      value={values.description}
+                      error={errors.description}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    {errors.description && touched.description && (
+                      <span>{errors.description}</span>
+                    )}
+                  </F.Column>
+                </F.Row>
                 <F.Footer>
                   <Button
                     loading={false}
